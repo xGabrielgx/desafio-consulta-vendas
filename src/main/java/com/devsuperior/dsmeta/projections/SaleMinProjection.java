@@ -8,6 +8,7 @@ public interface SaleMinProjection {
 
     Long getId();
     Double getAmount();
+    Double getTotal();
     LocalDate getDate();
-    String getSellerName();
+    String getName();
 }

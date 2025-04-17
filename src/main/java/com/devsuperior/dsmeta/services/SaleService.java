@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.devsuperior.dsmeta.dto.SaleSummaryMinDTO;
 import com.devsuperior.dsmeta.projections.SaleMinProjection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,34 +23,52 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class SaleService {
-	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
-	LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
-	LocalDate result = today.minusYears(1L);
+    LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
+    LocalDate result = today.minusYears(1L);
 
 
-	@Autowired
-	private SaleRepository repository;
-	
-	public SaleMinDTO findById(Long id) {
-		Optional<Sale> result = repository.findById(id);
-		Sale entity = result.get();
-		return new SaleMinDTO(entity);
-	}
+    @Autowired
+    private SaleRepository repository;
 
-	public Page<SaleMinDTO> findAll(Pageable pageable, String minDate, String maxDate, String name) {
+    public SaleMinDTO findById(Long id) {
+        Optional<Sale> result = repository.findById(id);
+        Sale entity = result.get();
+        return new SaleMinDTO(entity);
+    }
 
-		if(minDate.trim().isEmpty()) {
-			minDate = String.valueOf(result);
-		}
-		if (maxDate.trim().isEmpty()) {
-			maxDate = String.valueOf(today);
-		}
+    public Page<SaleMinDTO> findBySale(Pageable pageable, String minDate, String maxDate, String name) {
 
-		LocalDate minLocalDate = LocalDate.parse(minDate, formatter);
-		LocalDate maxLocalDate = LocalDate.parse(maxDate, formatter);
+        if (minDate.trim().isEmpty()) {
+            minDate = String.valueOf(result);
+        }
+        if (maxDate.trim().isEmpty()) {
+            maxDate = String.valueOf(today);
+        }
 
-		return repository.searchBySale(pageable, minLocalDate, maxLocalDate, name);
-	}
+        LocalDate minLocalDate = LocalDate.parse(minDate, formatter);
+        LocalDate maxLocalDate = LocalDate.parse(maxDate, formatter);
+
+        return repository.searchBySale(pageable, minLocalDate, maxLocalDate, name);
+    }
+
+    public Page<SaleSummaryMinDTO> findBySaleSummary(Pageable pageable, String minDate, String maxDate) {
+
+        if (minDate.trim().isEmpty()) {
+            minDate = String.valueOf(result);
+        }
+
+        if (maxDate.trim().isEmpty()) {
+            maxDate = String.valueOf(today);
+        }
+
+        LocalDate minLocalDate = LocalDate.parse(minDate, formatter);
+        LocalDate maxLocalDate = LocalDate.parse(maxDate, formatter);
+
+        Page<SaleMinProjection> list = repository.searchBySaleSummary(pageable, minLocalDate, maxLocalDate);
+        Page<SaleSummaryMinDTO> result = list.map(x -> new SaleSummaryMinDTO(x));
+        return result;
+    }
 }

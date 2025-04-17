@@ -20,6 +20,7 @@ public class SaleMinDTO {
 		this.sellerName = sellerName;
 	}
 
+
 	public SaleMinDTO(Sale entity) {
 		id = entity.getId();
 		date = entity.getDate();
@@ -28,12 +29,12 @@ public class SaleMinDTO {
 
 	}
 
-//	public SaleMinDTO(SaleMinProjection projection) {
-//		id = projection.getId();
-//		amount = projection.getAmount();
-//		date = projection.getDate();
-//		sellerName = projection.getSellerName();
-//	}
+	public SaleMinDTO(SaleMinProjection projection) {
+		id = projection.getId();
+		amount = projection.getAmount();
+		date = projection.getDate();
+		sellerName = projection.getName();
+	}
 
 	public Long getId() {
 		return id;
